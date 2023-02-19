@@ -18,7 +18,7 @@ Python 3.7, Django 2.2, DRF, JWT
 
 Cоздай и активируй виртуальное окружение:
 
-```python3 -m venv venv```
+```python -m venv venv```
 
 * Если у тебя Linux/macOS
 
@@ -28,7 +28,7 @@ Cоздай и активируй виртуальное окружение:
 
     ```source env/scripts/activate```
 
-```python3 -m pip install --upgrade pip```
+```python -m pip install --upgrade pip```
 
 Установи зависимости из файла requirements.txt:
 
@@ -36,9 +36,63 @@ Cоздай и активируй виртуальное окружение:
 
 Выполни миграции:
 
-```python3 manage.py migrate```
+```python manage.py migrate```
 
 Запусти проект:
 
-```python3 manage.py runserver```
+```python manage.py runserver```
+
+Создаем суперпользователя:
+
+```python manage.py createsuperuser```
+
+### Примеры запросов
+
+```
+GET  http://127.0.0.1:8000/api/v1/posts/
+```
+Результат:
+```json
+[
+    {
+        "id": 1,
+        "author": "newbor",
+        "text": "Hey",
+        "pub_date": "2022-08-08T18:41:19.125087Z",
+        "image": null,
+        "group": null
+    },
+    {
+        "id": 2,
+        "author": "newbor",
+        "text": "Тестовый пост",
+        "pub_date": "2022-08-09T13:23:43.516385Z",
+        "image": null,
+        "group": null
+    }
+]
+```
+```
+POST  http://127.0.0.1:8000/api/v1/follow/
+```
+Данные запроса: 
+```json
+{
+  "following": "leo"
+}
+```
+Результат: 
+```json
+{
+    "id": 1,
+    "following": "leo",
+    "user": "newbor"
+}
+```
+
+По адресу `http://127.0.0.1:8000/redoc/` будет доступна документация для API **Yatube**
 ____
+## Авторы
+
+- Команда Яндекс.Практикума
+- Мустафаев Замир

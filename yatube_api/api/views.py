@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import filters, mixins, viewsets
 from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from posts.models import Group, Post
 from .permissions import IsAuthorOrReadOnly
@@ -13,16 +14,22 @@ from .serializers import (
 
 
 class CommentViewSet(viewsets.ModelViewSet):
+    """Работа с комментариями к постам."""
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthorOrReadOnly]
+    permission_classes = (IsAuthorOrReadOnly,)
+
+    def get_post(self):
+        """Получение id поста из URL."""
+        post = self.kwargs.get('post_id')
+        return get_object_or_404(Post, pk=post)
 
     def get_queryset(self):
-        post = get_object_or_404(Post, pk=self.kwargs.get('post_id'))
-        return post.comments.all()
+        """Получение комментариев к текущему посту."""
+        return self.get_post().comments.all()
 
     def perform_create(self, serializer):
-        post = get_object_or_404(Post, pk=self.kwargs.get('post_id'))
-        serializer.save(author=self.request.user, post=post)
+        """Создание комментария для нужного поста из URL."""
+        serializer.save(author=self.request.user, post=self.get_post())
 
 
 class FollowViewSet(
@@ -30,6 +37,7 @@ class FollowViewSet(
     mixins.CreateModelMixin,
     viewsets.GenericViewSet
 ):
+    """Работа с подписчиками."""
     serializer_class = FollowSerializer
     filter_backends = (filters.SearchFilter,)
     search_fields = ('following__username', 'user__username')
@@ -42,15 +50,17 @@ class FollowViewSet(
 
 
 class GroupViewSet(viewsets.ReadOnlyModelViewSet):
+    """Просмотр групп."""
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
-    permission_classes = [IsAuthorOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 
 class PostViewSet(viewsets.ModelViewSet):
+    """Работа с постами пользователя."""
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = [IsAuthorOrReadOnly]
+    permission_classes = (IsAuthorOrReadOnly,)
     pagination_class = LimitOffsetPagination
 
     def perform_create(self, serializer):

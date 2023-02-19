@@ -5,9 +5,13 @@ User = get_user_model()
 
 
 class Group(models.Model):
-    title = models.CharField(max_length=200, verbose_name='Заголовок')
-    slug = models.SlugField(unique=True, verbose_name='индекс')
+    title = models.CharField('Заголовок', max_length=200,)
+    slug = models.SlugField('Индекс', unique=True,)
     description = models.TextField(verbose_name='Описание')
+
+    class Meta:
+        verbose_name = 'Группа'
+        verbose_name = 'Группы'
 
     def __str__(self):
         return self.title
@@ -26,7 +30,6 @@ class Post(models.Model):
     )
     image = models.ImageField(
         upload_to='posts/',
-        null=True,
         blank=True
     )
     group = models.ForeignKey(
@@ -36,6 +39,10 @@ class Post(models.Model):
         blank=True,
         null=True
     )
+
+    class Meta:
+        verbose_name = 'Пост'
+        verbose_name_plural = 'Посты'
 
     def __str__(self):
         return self.text
@@ -81,3 +88,5 @@ class Follow(models.Model):
                 name='unique_follow'
             )
         ]
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'
